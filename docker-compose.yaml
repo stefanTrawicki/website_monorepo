@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  strapi:
+    container_name: strapi
+    image: strapi/strapi:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_CLIENT: ${DATABASE_CLIENT}
+      DATABASE_HOST: postgres
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USERNAME: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      APP_KEYS: ${APP_KEYS}
+      NODE_ENV: ${NODE_ENV}
+    volumes:
+      - ./website_cms/website:/opt/app
+    ports:
+      - 1337:1337
+    depends_on:
+      - db
+
+  db:
+    container_name: postgres
+    env_file: .env
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./website_cms/data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  server:
+    container_name: server
+    env_file: .env
+    build:
+      context: ./website_server
+      dockerfile: Dockerfile
+    environment:
+      CMS_URL: ${CMS_URL}
+    ports:
+      - 8080:8080

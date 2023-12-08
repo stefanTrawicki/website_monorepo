@@ -1,0 +1,6 @@
+[submodule "website_cms"]
+	path = website_cms
+	url = git@github.com:stefanTrawicki/website_cms.git
+[submodule "website_server"]
+	path = website_server
+	url = git@github.com:stefanTrawicki/website_server.git
